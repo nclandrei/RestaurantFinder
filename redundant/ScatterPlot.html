@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+	<head>
+	<meta charset="utf-8">
+	<title>Scatter Plot</title>
+	<style>
+		.main text {
+		    font: 10px sans-serif;	
+		}
+
+		.axis line, .axis path {
+		    shape-rendering: crispEdges;
+		    stroke: black;
+		    fill: none;
+		}
+
+		.tick text{
+		    font-size: 12px;
+		  }
+
+		.tick line{
+		   	opacity: 0.2;
+		}
+	</style>
+	</head>
+
+	<body>
+
+
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+		<script>
+			function render(data){
+				var margin = {top: 20, right: 15, bottom: 60, left: 60}
+			      , width = 960 - margin.left - margin.right
+			      , height = 500 - margin.top - margin.bottom;
+			    
+			    var x = d3.scale.linear()
+			              .domain([0, d3.max(data, function(d) { return d.id; })])
+			              .range([ 0, width ]);
+			    
+			    var y = d3.scale.linear()
+			    	      .domain([0, d3.max(data, function(d) { return d.timeDiff; })])
+			    	      .range([ height, 0 ]);
+			 
+			    var chart = d3.select('body')
+			    .append('svg:svg')
+				.attr('width', width + margin.right + margin.left)
+				.attr('height', height + margin.top + margin.bottom)
+				.attr('class', 'chart')
+
+			    var main = chart.append('g')
+				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+				.attr('width', width)
+				.attr('height', height)
+				.attr('class', 'main')   
+			        
+			    // draw the x axis
+			    var xAxis = d3.svg.axis()
+				.scale(x)
+				.orient('bottom')
+				.innerTickSize(-height)
+			    .outerTickSize(0)
+			    .tickPadding(10);
+
+			    main.append('g')
+				.attr('transform', 'translate(0,' + height + ')')
+				.attr('class', 'main axis date')
+				.call(xAxis);
+
+			    // draw the y axis
+			    var yAxis = d3.svg.axis()
+				.scale(y)
+				.orient('left')
+				.innerTickSize(-width)
+			    .outerTickSize(0)
+			    .tickPadding(10);
+
+			    main.append('g')
+				.attr('transform', 'translate(0,0)')
+				.attr('class', 'main axis date')
+				.call(yAxis);
+
+			    var g = main.append("svg:g"); 
+			    
+			    g.selectAll("scatter-dots")
+			      .data(data)
+			      .enter().append("svg:circle")
+			          .attr("cx", function (d,i) { return x(d.id); } )
+			          .attr("cy", function (d) { return y(d.timeDiff); } )
+			          .attr("r", 8)
+			          .style("fill", function(d) { return "#0000FF";});
+
+			    //draw x axis label
+			    main.append("text")
+			        .attr("x", width / 2 )
+			        .attr("y",  height + 40)
+			        .style("font-size","15px")
+			        .style("text-anchor", "middle")
+			        .text("Index of Difficulty");
+
+			    //draw y axis label
+			    main.append("text")
+			        .attr("transform", "rotate(-90)")
+			        .style("font-size","15px")
+			        .attr("y", 0 - 60)
+			        .attr("x",0 - (height / 2))
+			        .attr("dy", "1em")
+			        .style("text-anchor", "middle")
+			        .text("Time - milliseconds");
+			}
+
+			var small_array = [];
+			var info = [];
+			render(info);
+
+			$("body").click(function(e) {
+				//clear the previous graph
+				$("svg").remove();
+
+				var x = e.pageX;
+				var y = e.pageY;
+				var d = new Date();
+				var elem = document.elementFromPoint(x, y);
+				var click = {x:x, y:y, time:d.getTime(), buttonW:elem.offsetWidth};
+
+				small_array.push(click);
+
+				//create the Fitts object
+				for(var i = 1; i < small_array.length; i++){
+					var x1 = small_array[i-1].x;
+					var x2 = small_array[i].x;
+
+					var y1 = small_array[i-1].y;
+					var y2 = small_array[i].y;
+
+					var w = small_array[i].buttonW;
+
+					var distance = Math.sqrt(((x1 - x2)*(x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+					var ID = Math.log(distance/w + 1)/Math.log(2);
+					var timeDiff = small_array[i].time - small_array[i-1].time;
+
+					var fitts = {id:ID, timeDiff:timeDiff};
+					info.push(fitts);
+				}
+
+				render(info);
+			});
+
+		</script>
+	</body>
+</html>

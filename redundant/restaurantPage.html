@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant page</title>
+    <link href="static/css/style.css" rel="stylesheet">
+    <link href="static/css/star-rating.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div id="wrapper">
+  <div class="overlay"></div>
+    <!-- Sidebar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+        <ul class="nav sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="#">
+                   Sabri
+                </a>
+            </li>
+            <li>
+                <a href="#">Home</a>
+            </li>
+            <li>
+                <a href="#">About</a>
+            </li>
+            <li>
+                <a href="#">Events</a>
+            </li>
+            <li>
+                <a href="#">Team</a>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Works <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li class="dropdown-header">Dropdown heading</li>
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+            <li>
+                <a href="#">Services</a>
+            </li>
+            <li>
+                <a href="#">Contact</a>
+            </li>
+            <li>
+                <a href="https://twitter.com/maridlcrmn">Follow me</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+      <div class="container">
+          <div class="row">
+              <div class="col-xs-12">
+                  <div id="header">
+                      <button type="button" class="hamburger is-closed" data-toggle="offcanvas">
+                          <span class="hamb-top"></span>
+                          <span class="hamb-middle"></span>
+                          <span class="hamb-bottom"></span>
+                      </button>
+                      <a href="" class="logo">Sabri</a>
+                      <div class="title">Mario's pizza</div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-xs-12">
+              <div class="restaurantHeader col-xs-4 col-xs-offset-4">
+                  <p>Opening Time <strong>10am - 10pm</strong></p>
+                  <address>
+                    <p>373 Byres Rd, Glasgow G12 8AU</p>
+                  </address>
+                  <p>Fusion cuisine Haute cuisine Note by Note cuisine Nouvelle cuisine Vegan cuisine Vegetarian cuisine</p>
+                  <form class="form-inline">
+                    <div class="form-group">
+                      <label><img src="static/images/marios_pizza_logo.png" class="restaurantHeader-img" alt="restaurant logo"></label>
+                      <input class="rating" type="number" value="3" data-size="md">
+                    </div>
+                  </form>
+              </div>
+          </div>
+          <div class="col-xs-4 col-xs-offset-4">
+              <p class="text-justify">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In porta scelerisque dolor aliquet pellentesque. Vestibulum at risus vel neque tincidunt rutrum vitae ac quam. Curabitur ac felis tortor. Curabitur lacus eros, gravida consectetur risus a, auctor varius urna. Fusce finibus ut sem nec pretium. Suspendisse metus massa, volutpat eu sapien et, congue imperdiet ante. Proin semper nisl non convallis iaculis. In hac habitasse platea dictumst. Quisque sodales ipsum ac sapien viverra, quis bibendum sem consequat.
+              </p>
+          </div>
+          <div class="col-xs-4 col-xs-offset-4">
+              <h3>Reviews</h3>
+              <blockquote class="blockquote">
+                <input id="rating-small" class="rating" type="number" value="2">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+                <footer>Someone famous</footer>
+              </blockquote>
+              <blockquote class="blockquote">
+                <input class="rating" type="number" value="6">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+                <footer>Someone famous</footer>
+              </blockquote>
+          </div>
+      </div>
+    <!-- footer -->
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="copyright">© 2015 Sabri Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="static/js/star-rating.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+    $(".rating").rating({
+              min: 0,
+              max: 6,
+              step: 1,
+              stars: 6,
+              size: 'sm',
+              showClear: false,
+              showCaption: false,
+              disabled: true
+    });
+    </script>
+</body>
+</html>

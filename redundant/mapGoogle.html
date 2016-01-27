@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head><title>AX2</title>
+<meta charset="UTF-8">
+</head>
+<body>
+
+<div id="res"></div>
+<label>Enter postcode here:</label>
+<input type="text" id="postcode" value="G20 7NZ"/>
+<button id="postcode-go"> go </button>
+<div id="map" style="height: 600px; width: 100%"></div>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1Fuqax5sLGDq4KRkjaTobvhq-y-UyNVA"></script>
+<script> 
+
+	document.getElementById("postcode-go").addEventListener("click", function(){	
+		$.ajax({
+	        url: "https://public.je-apis.com/restaurants?q="+$("#postcode").val(),
+	        dataType: 'json',
+	        type: "GET",
+			headers: {
+				"Accept-Tenant": "uk",
+				"Accept-Language": "en-GB",
+				"Authorization": "Basic VGVjaFRlc3RBUEk6dXNlcjI=",
+				"Host": "public.je-apis.com"	
+
+			},
+	        success: function (parsed_json) {
+		                 
+		        var restaurants_res = [];                                                   
+	            parsed_json.Restaurants.forEach(function(entry) {		
+					restaurants_res.push(entry);
+		    	});
+
+		    	onDataReady(restaurants_res);
+
+	        },
+	        error: function (e) {
+	            alert('Failure ' + e.status);
+	        },
+	        done: function () {
+	            alert('done');
+	        }
+		});
+	});
+
+	function onDataReady(data) {
+
+		var neededProc = data.length + 1;
+		
+		//determine zoom in location
+		var apiUrl = "http://maps.googleapis.com/maps/api/geocode/json?address=" + $("#postcode").val() + "&sensor=false";
+		var localLatLang;
+		jQuery.getJSON( apiUrl, function( coo ) {
+			neededProc--;
+			localLatLang = coo.results[0].geometry.location;
+			if (neededProc == 0){
+        		onCooRecieved(data, localLatLang);
+        	}
+		});
+    	
+    	for (var i =0; i<data.length; i++){
+    		
+    		var apiUrl = "http://maps.googleapis.com/maps/api/geocode/json?address=" + data[i].Postcode + "&sensor=false";
+
+    		jQuery.getJSON( apiUrl, function( i, coo ) {
+        		neededProc--;
+        		data[i].latLng = coo.results[0].geometry.location;
+        		if (neededProc == 0){
+        			onCooRecieved(data, localLatLang);
+        		}
+      		}.bind(this, i));
+    	}
+
+	}
+
+	function onCooRecieved(data, localLatLang){
+
+    	var map = new google.maps.Map(document.getElementById('map'), {
+      		center: localLatLang,
+      		zoom: 12
+    	});
+		
+		for (var i =0; i<data.length; i++){
+			console.log(data[i].Logo[0].StandardResolutionURL);
+
+			//edit contentString for the pop up info
+			var contentString =  '<div style = "text-align : center ">'
+				+ data[i].Name
+				+ '<img style="margin:0 auto; display:block" src=' + data[i].Logo[0].StandardResolutionURL + '>'
+				+ 'Rating: '
+				+ data[i].RatingStars
+				+ '</div>';
+			
+
+			var infoWindow = new google.maps.InfoWindow({content: contentString});
+
+			var marker = new google.maps.Marker({
+        		position: data[i].latLng,
+        		map: map,
+        		mapTypeId: google.maps.MapTypeId.TERRAIN
+      		});
+
+      		marker.addListener('click', function(marker, infoWindow) {
+        		infoWindow.open(map, marker);
+      		}.bind(this, marker, infoWindow));
+		}
+	}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+.title {
+  text-align: center;
+  font-size: 36px;
+}
+.restaurantHeader{
+  text-align: center; 
+}
+.restaurantHeader-img {
+  width: 100px;
+  height: auto;
+}
+.rating-sm {
+  font-size: 14px !important;
+}
+#map {
+  height: 100%;
+  width: 100%;
+}
+.searchPanel {
+  position: fixed;
+  z-index: 5;
+  left: 23%;
+}
+
+.main text {
+  font: 10px sans-serif;  
+}
+.axis line, .axis path {
+  shape-rendering: crispEdges;
+  stroke: black;
+  fill: none;
+}
+.tick text{
+  font-size: 12px;
+}
+.tick line{
+  opacity: 0.2;
+}
+.map{
+  z-index: 6;
+}
+.content{
+    padding: 10%;
+}

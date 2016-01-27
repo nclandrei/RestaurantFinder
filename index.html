@@ -1,0 +1,653 @@
+﻿<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/star-rating.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body bgcolor="#c5d5cb">
+<!-- Map -->
+<div id="map" hidden></div>
+<div id="wrapper">
+    <div class="overlay"></div>
+    <!-- Sidebar -->
+    <div id="spinner"></div>
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+        <ul class="nav sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="">
+                    Sabri
+                </a>
+            </li>
+            <li>
+                <a href="">Home</a>
+            </li>
+            <li>
+                <a href="#" data-toggle="modal" data-target=".about-modal">About</a>
+            </li>
+            <li>
+                <a href="#" data-toggle="modal" data-target=".stats-modal">User statistics</a>
+            </li>
+            <li>
+                <a href="#" data-toggle="modal" data-target=".team-modal">Team</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <button type="button" class="hamburger is-closed" data-toggle="offcanvas"> 
+        <span class="hamb-top"></span>
+        <span class="hamb-middle"></span>
+        <span class="hamb-bottom"></span>
+    </button>
+
+    <div class="content" id="contentBody">
+    <center> <img id="sabri-logo" src="img/Sabri_Logo.jpg" style="margin-bottom: 20px;"></center>
+    <div class="input-group col-xs-6 searchPanel">
+        <div class="input-group-btn search-panel">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span id="search_concept">Filter by</span> <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><input type="checkbox" id="ID" name="filterByCuisine" value="Indian" onClick="filterByCuisine(this)"><label for="ID">Indian</label></li>
+                        <li><input type="checkbox" id="ID" name="filterByCuisine" value="Chinese" onClick="filterByCuisine(this)"><label for="ID" name="NAME" value="Chinese">Chinese</label></li>
+                        <li><input type="checkbox" id="ID" name="filterByCuisine" value="American" onClick="filterByCuisine(this)"><label for="ID" name="NAME" value="American">American</label></li>
+                <li><input type="checkbox" id="ID" name="nearby" value="Nearby" onClick="filterByIsClose()"><label for="ID">Nearby</label></li>
+                <li><input type="checkbox" id="ID" name="isOPen" value="isOpen" onClick="filterByOpenNow()"><label for="ID">Open Now</label></li>
+
+            </ul>
+                </div>
+                <input type="hidden" name="search_param" value="all" id="search_param">
+                <form id="searchForm">
+                    <span class="input-group-btn">
+                        <input id="postcode" type="text" class="form-control" name="x" placeholder="Search by postcode..." required>
+                        <button class="btn btn-default" type="button" onclick="getLocation()"><span class="glyphicon glyphicon-record"></span></button> 
+                        <button id="postcode-go" class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                </form>
+            </div>
+        </div>
+    <!-- /#wrapper -->
+    <!-- Description modal -->
+	<div class="modal fade description-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<div class="title">Title was not provided</div>
+					<div class="restaurantHeader">
+						<p id="cuisineTypes">Food type was not provided</p>
+						<p>Work time today: <strong id="workTime"><!-- 10am - 10pm --></strong></p>
+						<p id="address">Address was not provided</p>
+						<p id="link">Webpage link was not provided</p>
+						<form class="form-inline">
+							<div class="form-group">
+								<label><img src="" class="restaurantHeader-img" alt="restaurant logo"></label>
+								<input id="restaurantRating" class="rating" type="number" value="0" data-size="md">
+							</div>
+						</form>
+					</div>
+					<p id="description" class="text-justify">
+						No description provided
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+    <!-- D3 plot -->
+    <div class="modal fade stats-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body" id="plot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade about-modal" tabindex="-1" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body"> 
+                    <center> <h1> Sabri - Best Restaurant Finder in Glasgow </h1> </center>
+                    <center> <img id="sabri-logo" src="img/Sabri_Logo.jpg" style="margin-bottom: 20px;"></center>
+                    <br> <br>
+                    <p align="justify" style="font-size: 16px;"> 
+                    Since the dawn of humanity the masses have felt constant depletion of nutrients in their bodies. A non-permanent solution to this problem is the regular supply of substances collectively known as ‘food’. Food, however, is something wars were fought over, and it is not one of those little things our Creators decided they could just freely provide to us. In order for an organism to stay alive they need to prepare their own food, or in current times, buy a ready-made meal from one of the numerous commercial institutions bestowing nourishment. </p>
+                    <p align="justify" style="font-size: 16px;">
+                    We are developing an application that will address all your needs. You want an app that can show you the nearest places where you can grab a bite? You want to see which restaurants or fast-foods have the highest ratings? We’ve got you covered. Sabri will give you all the possibilities for all types of users to choose where, when and what to eat.
+                    </p> 
+                </div>
+            </div>
+        </div>    
+    </div>
+
+    <div class="modal fade team-modal" tabindex="-1" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body"> 
+                    <center> <h1> Team behind Sabri </h1> </center>
+                    <center> <h3> University of Glasgow </h3> </center>
+                    <br> <br>
+                    <p align="justify" style="font-size: 25px;"> 
+                            <center> Edvinas Simkus </center> <br>
+                            <center> Andrei-Mihai Nicolae </center> <br>
+                            <center> Ivan Kyosev </center> <br>
+                            <center> Richard Pearson </center> <br>
+                            <center> Ian Denev </center> <br>
+                            <center> Mariusz Szmajduch </center> <br>
+                    </p>
+                </div>
+            </div>
+        </div>    
+    </div>    
+
+<!-- js files -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1Fuqax5sLGDq4KRkjaTobvhq-y-UyNVA"></script>
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/d3.min.js" charset="utf-8"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/star-rating.js"></script>
+<script src="js/spin.min.js"></script>
+<script>
+    var restaurants_res = [];
+    var initial_res = [];
+    var initial_locals = [];
+    var criteria = new Object();
+    var localLatLang;
+    
+    $("#searchForm").submit(function(e) {
+        e.preventDefault();
+        $('#spinner').spin('default');
+        $.ajax({
+            url: "https://public.je-apis.com/restaurants?q=" + $("#postcode").val(),
+            dataType: 'json',
+            type: "GET",
+            headers: {
+                "Accept-Tenant": "uk",
+                "Accept-Language": "en-GB",
+                "Authorization": "Basic VGVjaFRlc3RBUEk6dXNlcjI="
+            },
+            success: function (parsed_json) {
+                //var restaurants_res = [];
+                parsed_json.Restaurants.forEach(function (entry) {
+                    restaurants_res.push(entry);
+                });
+                initial_res = restaurants_res;
+                onDataReady(restaurants_res);
+
+            },
+            error: function (e) {
+                alert('Failure ' + e.status);
+            },
+            done: function () {
+                alert('done');
+            }
+        });
+    });
+
+    function restaurantinfo(id) {
+        var restaurant;
+        Restaurants.forEach(function (o) {
+            if (o.Id == id) restaurant = o;
+        });
+
+        var cuisineTypes =
+                restaurant.CuisineTypes.map(function (elem) {
+                    return elem.Name;
+                }).join(", ");
+        $('.title').text(restaurant.Name);
+        $('#cuisineTypes').text(cuisineTypes);
+        $('#address').text(restaurant.Address + ", " + restaurant.Postcode);
+        $('#link').html('<a href="' + restaurant.Url + '">More details and delivery information</a>');
+        $('.restaurantHeader-img').attr("src", restaurant.Logo[0].StandardResolutionURL);
+        $('#restaurantRating').rating('update', restaurant.RatingStars);
+        restaurantDetails(id);
+    }
+
+    function restaurantDetails(restaurantId) {
+        $.ajax({
+            url: "https://public.je-apis.com/restaurants/" + restaurantId + "/details",
+            dataType: 'json',
+            type: "GET",
+            headers: {
+                "Accept-Tenant": "uk",
+                "Accept-Language": "en-GB",
+                "Authorization": "Basic VGVjaFRlc3RBUEk6dXNlcjI="
+            },
+            success: function (parsed_json) {
+                var now = new Date();
+                var week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                var today = week[now.getDay()];
+                var workTime = [];
+                parsed_json.OpeningTimes.forEach(function (o) {
+                    if (o.Key == today) {
+                        workTime.push(o.Open);
+                        workTime.push(o.Closed);
+                    }
+                });
+                if (parsed_json.Description.length > 10) {
+                    $('#description').text(parsed_json.Description);
+                }
+                else {
+                    $('#description').html("<center> No description available. </center>");
+                }
+
+                $('#workTime').text(workTime.length != 0 ? workTime[0] + " - " + workTime[1] : "time not avaible");
+            },
+            error: function (e) {
+                alert('Failure ' + e.status);
+            }
+        });
+    }
+
+    function onDataReady(data) {
+        var neededProc = data.length + 1;
+        var googleMapsApiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+        //determine zoom in location
+        var apiUrl = googleMapsApiUrl + $("#postcode").val() + "&sensor=false";
+
+        jQuery.getJSON(apiUrl, function (coo) {
+            neededProc--;
+            localLatLang = coo.results[0].geometry.location;
+            if (neededProc == 0) {
+                onCooRecieved(data);
+            }
+        });
+
+        for (var i = 0; i < data.length; i++) {
+
+            var apiUrl = googleMapsApiUrl + data[i].Postcode + "&sensor=false";
+
+            jQuery.getJSON(apiUrl, function (i, coo) {
+                neededProc--;
+                if (coo.results[0] != null) {
+                    data[i].latLng = coo.results[0].geometry.location;
+                }
+                if (neededProc == 0) {
+                    onCooRecieved(data);
+                }
+            }.bind(this, i));
+        }
+
+    }
+
+    function onCooRecieved(data) {
+        $('#map').attr('hidden', false); 
+        $('#sabri-logo').attr('hidden', true); 
+        $('.content').css("padding", 0); 
+        $(".searchPanel").css("top","0");
+        $('#spinner').spin(false);
+        $('html, body').animate({scrollTop: $('#map').offset().top}, 'slow');
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: localLatLang,
+            zoom: 12
+        });
+
+        for (var i = 0; i < data.length; i++) {
+            //edit contentString for the pop up info
+	    var openText = (data[i].isOpen == true) ? "Closed" : "Open";
+	    var boxColor = (openText == "Open") ? "Green" : "Red";
+            var contentString = '<div style = "text-align : center ">'
+                    + data[i].Name
+                    + '<img style="margin:0 auto; display:block" src=' + data[i].Logo[0].StandardResolutionURL + '>'
+                    + 'Rating: '
+                    + data[i].RatingStars
+                    + '<br>'
+		    + '<div style="border: 2px; color: ' + boxColor + '"> ' + openText + ' </div>'
+		    + '<br>'
+                    + '<button onclick="restaurantinfo(' + data[i].Id + ')" type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target=".description-modal">More details</button>'
+                    + '</div>';
+
+            Restaurants = data;
+            var infoWindow = new google.maps.InfoWindow({content: contentString});
+
+            var marker = new google.maps.Marker({
+                position: data[i].latLng,
+                map: map,
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
+
+            marker.addListener('click', function (marker, infoWindow) {
+                infoWindow.open(map, marker);
+            }.bind(this, marker, infoWindow));
+        }
+    }
+
+    $(".rating").rating({
+        min: 0,
+        max: 6,
+        step: 1,
+        stars: 6,
+        size: 'sm',
+        showClear: false,
+        showCaption: false,
+        readonly: true
+    });
+
+    var options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
+
+    function success(pos) {
+      var crd = pos.coords;
+      $.ajax({
+            url: "https://api.postcodes.io/postcodes?lon="+crd.longitude+"&lat="+crd.latitude,
+            dataType: 'json',
+            type: "GET",
+            success: function (location) {
+                $('#postcode').val(location.result[0].postcode);
+                $("#searchForm").submit();
+            },
+            error: function (e) {
+                alert('Failure ' + e.status);
+            }
+        });
+    };
+
+    function error(err) {
+      console.warn('ERROR(' + err.code + '): ' + err.message);
+    };
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, error, options);
+        } else { 
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    //Checkbox selects what type of cuisine you wish to view
+    function filterByCuisine(element){
+        var new_res = [];
+        if(!("cuisine" in criteria)){
+            criteria["cuisine"] = element.value;
+            for(var restaurant of restaurants_res){
+                for(var cuisine of restaurant.CuisineTypes){
+                    if(JSON.stringify(cuisine.Name) === JSON.stringify(element.value)){
+                        new_res.push(restaurant);
+                        break;
+                    }
+                }
+            }
+        }else{
+            var checkBoxes = document.getElementsByName("filterByCuisine");
+            var toCheck = false;
+            if (element.checked == true){
+                toCheck = true;
+            }
+            for(var box of checkBoxes){
+                box.checked = false;
+            }
+            delete criteria["cuisine"];
+            new_res = filterByList();
+            if(toCheck == true){
+                element.checked = true;
+                restaurants_res = new_res;
+                filterByCuisine(element);
+                new_res = restaurants_res;
+            }
+
+        }
+        restaurants_res = new_res;
+        onCooRecieved(restaurants_res);
+    }
+
+
+    //select whether the restaurant should be close by
+    function filterByIsClose(){
+        var new_res = [];;
+        if(!("closeBy" in criteria)){
+            criteria["closeBy"] = 2;
+            for(var restaurant of restaurants_res){
+                if(restaurant.IsCloseBy){
+                    new_res.push(restaurant);
+                }
+            }
+        }else{
+            delete criteria["closeBy"];
+            new_res = filterByList();
+        }
+        restaurants_res = new_res;
+        onCooRecieved(restaurants_res);
+    }
+
+    //iterates through the dictionary of applied filters
+    //and updates the array of restaurants accordingly
+    function filterByList(){
+        restaurants_res = initial_res;
+        if("cuisine" in criteria){
+            var cuisine = criteria["cuisine"];
+            delete criteria["cuisine"];
+            var boxes = document.getElementsByName("filterByCuisine");
+            var target;
+            for(var box of boxes){
+                if(box.value == cuisine){
+                    target = box;
+                    break;
+                }
+            }
+            filterByCuisine(target);
+        }
+        if("closeBy" in criteria){
+            delete criteria["closeBy"];
+            filterByIsClose();
+        }
+        if("openNow" in criteria){
+            delete criteria["openNow"];
+            filterByOpenNow();
+        }
+        return restaurants_res;
+    }
+
+    function filterByOpenNow(){
+        var new_res = [];
+        if(!("openNow" in criteria)){
+            criteria["openNow"] = 2;
+            for(var restaurant of restaurants_res){
+                if(restaurant.IsOpenNow){
+                    new_res.push(restaurant);
+                }
+            }
+        }else{
+            delete criteria["openNow"];
+            new_res = filterByList();
+        }
+        restaurants_res = new_res;
+        onCooRecieved(restaurants_res);
+    }
+
+    //D3 stuff
+    function render(data){
+        var margin = {top: 20, right: 15, bottom: 60, left: 60}
+          , width = 850 - margin.left - margin.right
+          , height = 500 - margin.top - margin.bottom;
+        
+        var x = d3.scale.linear()
+                  .domain([0, d3.max(data, function(d) { return d.id; })])
+                  .range([ 0, width ]);
+        
+        var y = d3.scale.linear()
+                  .domain([0, d3.max(data, function(d) { return d.timeDiff; })])
+                  .range([ height, 0 ]);
+     
+        var chart = d3.select('#plot')
+        .append('svg:svg')
+        .attr('width', width + margin.right + margin.left)
+        .attr('height', height + margin.top + margin.bottom)
+        .attr('class', 'chart')
+
+        var main = chart.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', 'main')   
+            
+        // draw the x axis
+        var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient('bottom')
+        .innerTickSize(-height)
+        .outerTickSize(0)
+        .tickPadding(10);
+
+        main.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .attr('class', 'main axis date')
+        .call(xAxis);
+
+        // draw the y axis
+        var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient('left')
+        .innerTickSize(-width)
+        .outerTickSize(0)
+        .tickPadding(10);
+
+        main.append('g')
+        .attr('transform', 'translate(0,0)')
+        .attr('class', 'main axis date')
+        .call(yAxis);
+
+        var g = main.append("svg:g"); 
+        
+        g.selectAll("scatter-dots")
+          .data(data)
+          .enter().append("svg:circle")
+              .attr("cx", function (d,i) { return x(d.id); } )
+              .attr("cy", function (d) { return y(d.timeDiff); } )
+              .attr("r", 8)
+              .style("fill", function(d) { return "#0000FF";});
+
+        //draw x axis label
+        main.append("text")
+            .attr("x", width / 2 )
+            .attr("y",  height + 40)
+            .style("font-size","15px")
+            .style("text-anchor", "middle")
+            .text("Index of Difficulty");
+
+        //draw y axis label
+        main.append("text")
+            .attr("transform", "rotate(-90)")
+            .style("font-size","15px")
+            .attr("y", 0 - 60)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Time - milliseconds");
+    }
+
+    var small_array = [];
+    var info = [];
+    render(info);
+
+    $("body").click(function(e) {
+        //clear the previous graph
+        $("svg").remove();
+
+        var x = e.pageX;
+        var y = e.pageY;
+        var d = new Date();
+        var elem = document.elementFromPoint(x, y);
+        var click = {x:x, y:y, time:d.getTime(), buttonW:elem.offsetWidth};
+
+        small_array.push(click);
+
+        //create the Fitts object
+        for(var i = 1; i < small_array.length; i++){
+            var x1 = small_array[i-1].x;
+            var x2 = small_array[i].x;
+
+            var y1 = small_array[i-1].y;
+            var y2 = small_array[i].y;
+
+            var w = small_array[i].buttonW;
+
+            var distance = Math.sqrt(((x1 - x2)*(x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+            var ID = Math.log(distance/w + 1)/Math.log(2);
+            var timeDiff = small_array[i].time - small_array[i-1].time;
+
+            var fitts = {id:ID, timeDiff:timeDiff};
+            info.push(fitts);
+        }
+
+        render(info);
+    });
+
+    // spinner
+    ;(function(factory) {
+
+      if (typeof exports == 'object') {
+        // CommonJS
+        factory(require('jquery'), require('spin.js'))
+      } else if (typeof define == 'function' && define.amd) {
+        // AMD, register as anonymous module
+        define(['jquery', 'spin'], factory)
+      } else {
+        // Browser globals
+        if (!window.Spinner) throw new Error('Spin.js not present')
+        factory(window.jQuery, window.Spinner)
+      }
+
+    }(function($, Spinner) {
+
+      $.fn.spin = function(opts, color) {
+
+        return this.each(function() {
+          var $this = $(this)
+            , data = $this.data()
+
+          if (data.spinner) {
+            data.spinner.stop()
+            delete data.spinner
+          }
+          if (opts !== false) {
+            opts = $.extend(
+              { color: color || $this.css('color') }
+            , $.fn.spin.presets[opts] || opts
+            )
+            data.spinner = new Spinner(opts).spin(this)
+          }
+        })
+      }
+
+      $.fn.spin.presets = {
+        tiny:  { lines:  8, length: 2, width: 2, radius: 3 }
+      , small: { lines:  8, length: 4, width: 3, radius: 5 }
+      , large: { lines: 10, length: 8, width: 4, radius: 8 }
+      , default: {
+          lines: 13 // The number of lines to draw
+        , length: 28 // The length of each line
+        , width: 14 // The line thickness
+        , radius: 42 // The radius of the inner circle
+        , scale: 1 // Scales overall size of the spinner
+        , corners: 1 // Corner roundness (0..1)
+        , color: '#000' // #rgb or #rrggbb or array of colors
+        , opacity: 0.25 // Opacity of the lines
+        , rotate: 0 // The rotation offset
+        , direction: 1 // 1: clockwise, -1: counterclockwise
+        , speed: 1 // Rounds per second
+        , trail: 60 // Afterglow percentage
+        , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+        , zIndex: 2e9 // The z-index (defaults to 2000000000)
+        , className: 'spinner' // The CSS class to assign to the spinner
+        , top: '50%' // Top position relative to parent
+        , left: '50%' // Left position relative to parent
+        , shadow: false // Whether to render a shadow
+        , hwaccel: false // Whether to use hardware acceleration
+        , position: 'absolute' // Element positioning
+        }
+      }
+
+    }));
+</script>
+</body>
+</html>
